@@ -5,6 +5,7 @@ const connection = require("./api/database/database");
 const User = require("./api/models/User");
 const Task = require("./api/models/Task");
 const Category = require("./api/models/Category");
+const { sendMessageToQueue } = require("./utils/rabbitMQ");
 
 connection
   .sync()

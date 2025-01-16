@@ -1,5 +1,58 @@
+/**
+ * @schema User
+ * properties:
+ *   name:
+ *     type: string
+ *     default: ""
+ *   email:
+ *     type: string
+ *     default: ""
+ *   username:
+ *     type: string
+ *     default: ""
+ *   password:
+ *     type: string
+ *     default: ""
+ *   phoneNumber:
+ *     type: string
+ *     default: ""
+ *   birthDate:
+ *     type: string
+ *     format: date
+ *     default: null
+ *   sex:
+ *     type: string
+ *     enum:
+ *       - M
+ *       - F
+ *     default: null
+ *   active:
+ *     type: boolean
+ *     default: true
+ *   profileImage:
+ *     type: string
+ *     default: ""
+ *   role:
+ *     type: string
+ *     enum:
+ *       - admin
+ *       - basic
+ *     default: basic
+ */
+/**
+ * @schema Login
+ * properties:
+ *   usernameOrEmail:
+ *     type: string
+ *     required: true
+ *     description: Username or Email is required
+ *   password:
+ *     type: string
+ *     required: true
+ *     description: Password is required
+ */
+
 const { Sequelize, DataTypes, Model } = require("sequelize");
-const { encryptPassword } = require("../../utils/encryptPassword");
 
 class User extends Model {
   static init(sequelize) {
@@ -27,16 +80,7 @@ class User extends Model {
         timestamps: true,
       }
     );
-
-    this.addHook("beforeCreate", async (user) => {
-      user.password = await encryptPassword(user.password);
-    });
-
-    this.addHook("beforeUpdate", async (user) => {
-      user.password = await encryptPassword(user.password);
-    });
   }
-
   static associate(models) {
     this.hasMany(models.Task, {
       foreignKey: "user_id",

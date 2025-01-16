@@ -9,5 +9,4 @@ COPY . .
 
 EXPOSE ${APPLICATION_PORT}
 
-# Comando para iniciar a aplicação
 CMD ["sh", "-c", "npx sequelize db:migrate && npm run start"]

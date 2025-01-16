@@ -1,9 +1,15 @@
+const { sendMessageToQueue } = require("../../utils/rabbitMQ");
 const readExcel = require("../../utils/readExcel");
 const taskRepository = require("../repositories/taskRepository");
 const TaskRepository = require("../repositories/taskRepository");
-const redis = require("redis");
-const client = redis.createClient();
-client.connect();
+// const redis = require("redis");
+// const client = redis.createClient({
+//   socket: {
+//     host: "redis",
+//     port: 6379,
+//   },
+// });
+// client.connect();
 
 class TaskService {
   async findAllTasks(userId) {
@@ -92,6 +98,18 @@ class TaskService {
     if (!task) {
       throw new Error("Task not found");
     }
+
+    if (updatedData.status == "completed") {
+      const email = {
+        to: "mameira55@gmail.com",
+        subject: "Teste",
+        html: "<h1>Teste</h1>",
+        text: "Teste",
+      };
+
+      sendMessageToQueue("email_queue", email);
+    }
+
     return await TaskRepository.updateTask(task, updatedData);
   }
 

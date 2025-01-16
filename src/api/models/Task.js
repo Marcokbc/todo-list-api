@@ -1,3 +1,56 @@
+/**
+ * @schema Task
+ * properties:
+ *   title:
+ *     type: string
+ *     required: true
+ *     description: The title of the task
+ *   description:
+ *     type: string
+ *     required: true
+ *     description: The detailed description of the task
+ *   status:
+ *     type: string
+ *     enum:
+ *       - pending
+ *       - in_progress
+ *       - completed
+ *     default: pending
+ *     description: The current status of the task
+ *   startDate:
+ *     type: string
+ *     format: date-time
+ *     required: true
+ *     default: now
+ *     description: The start date of the task
+ *   endDate:
+ *     type: string
+ *     format: date-time
+ *     required: true
+ *     description: The end date of the task
+ *   completedAt:
+ *     type: string
+ *     format: date-time
+ *     required: false
+ *     description: The date and time when the task was completed
+ *   priority:
+ *     type: string
+ *     enum:
+ *       - low
+ *       - medium
+ *       - high
+ *     default: medium
+ *     description: The priority level of the task
+ *   userId:
+ *     type: integer
+ *     required: true
+ *     description: The ID of the user who owns the task
+ *   categoryId:
+ *     type: integer
+ *     required: false
+ *     description: The ID of the category the task belongs to
+ */
+
 const { Model, DataTypes } = require("sequelize");
 
 class Task extends Model {

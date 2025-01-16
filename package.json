@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/app.js",
-    "start:dev": "nodemon ./src/app.js",
+    "start:dev": "nodemon --ignore ./swaggerFile.json ./src/app.js",
     "test": "jest --passWithNoTests"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.5",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",

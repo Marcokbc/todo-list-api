@@ -1,3 +1,16 @@
+/**
+ * @schema Category
+ * properties:
+ *   name:
+ *     type: string
+ *     required: true
+ *     description: The name of the category
+ *   description:
+ *     type: string
+ *     required: true
+ *     description: The detailed description of the category
+ */
+
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
 class Category extends Model {

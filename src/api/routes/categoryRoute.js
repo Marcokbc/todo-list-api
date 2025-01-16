@@ -36,7 +36,7 @@ const routes = express.Router();
 routes.get(
   "/categories",
   isAuthenticated,
-  categoryController.findAllCategories
+  categoryController.index
 );
 
 /**
@@ -70,7 +70,7 @@ routes.get(
 routes.get(
   "/category/:id",
   isAuthenticated,
-  categoryController.findCategoryById
+  categoryController.show
 );
 
 /**
@@ -124,7 +124,7 @@ routes.get(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CategoryInput'
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       201:
  *         description: Categoria criada com sucesso.
@@ -143,13 +143,13 @@ routes.post(
   "/category",
   [isAuthenticated, isAuthorized(["admin"])],
   validate(categoryPostSchema),
-  categoryController.createCategory
+  categoryController.store
 );
 
 /**
  * @swagger
  * /category/{id}:
- *   put:
+ *   patch:
  *     summary: Atualiza uma categoria existente
  *     tags:
  *       - Categories
@@ -168,7 +168,7 @@ routes.post(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CategoryInput'
+ *             $ref: '#/components/schemas/Category'
  *     responses:
  *       200:
  *         description: Categoria atualizada com sucesso.
@@ -189,7 +189,7 @@ routes.put(
   "/category/:id",
   [isAuthenticated, isAuthorized(["admin"])],
   validate(categoryPutSchema),
-  categoryController.updateCategory
+  categoryController.update
 );
 
 /**
@@ -221,7 +221,7 @@ routes.put(
 routes.delete(
   "/category/:id",
   [isAuthenticated, isAuthorized(["admin"])],
-  categoryController.deleteCategory
+  categoryController.destroy
 );
 
 module.exports = routes;

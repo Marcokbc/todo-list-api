@@ -2,7 +2,7 @@ const { findRecentTasks } = require("../repositories/taskRepository");
 const TaskService = require("../services/taskService");
 
 module.exports = {
-  async findAllTasks(req, res) {
+  async index(req, res) {
     try {
       const tasks = await TaskService.findAllTasks(req.user.id);
       return res.status(200).json(tasks);
@@ -11,7 +11,7 @@ module.exports = {
     }
   },
 
-  async findTaskById(req, res) {
+  async show(req, res) {
     try {
       const task = await TaskService.findTaskById(req.params.id, req.user.id);
       return res.status(200).json(task);
@@ -68,9 +68,8 @@ module.exports = {
     }
   },
 
-  async postTask(req, res) {
+  async store(req, res) {
     try {
-      // Extrai os dados do corpo da requisição
       const {
         title,
         description,
@@ -82,14 +81,12 @@ module.exports = {
         categoryId,
       } = req.body;
 
-      // Certifique-se de que o req.user.id está disponível, fornecido pelo middleware de autenticação
       if (!req.user || !req.user.id) {
         return res
           .status(401)
           .json({ error: "Unauthorized: User not authenticated" });
       }
 
-      // Cria a nova tarefa através do serviço
       const newTask = await TaskService.createTask({
         title,
         description,
@@ -98,28 +95,25 @@ module.exports = {
         endDate,
         completedAt,
         priority,
-        userId: req.user.id, // Pega o id do usuário autenticado
+        userId: req.user.id,
         categoryId,
       });
 
-      // Retorna a resposta de sucesso com status 201
       return res.status(201).json(newTask);
     } catch (error) {
-      // Se for um erro de validação, retorna 400
       if (error.name === "SequelizeValidationError") {
         return res
           .status(400)
           .json({ error: error.errors.map((e) => e.message) });
       }
 
-      // Tratamento genérico de erro para outros casos
       return res
         .status(500)
         .json({ error: "Internal server error", message: error.message });
     }
   },
 
-  async putTask(req, res) {
+  async update(req, res) {
     try {
       const {
         title,
@@ -154,7 +148,7 @@ module.exports = {
     }
   },
 
-  async deleteTask(req, res) {
+  async destroy(req, res) {
     try {
       const result = await TaskService.deleteTask(req.params.id, req.user.id);
       return res.status(200).json(result);

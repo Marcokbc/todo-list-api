@@ -1,7 +1,7 @@
 const categoryService = require("../services/categoryService");
 
 module.exports = {
-  async findAllCategories(req, res) {
+  async index(req, res) {
     try {
       const users = await categoryService.findAllCategories();
       return res.status(200).json(users);
@@ -10,7 +10,7 @@ module.exports = {
     }
   },
 
-  async findCategoryById(req, res) {
+  async show(req, res) {
     try {
       const user = await categoryService.findCategoryById(req.params.id);
       return res.status(200).json(user);
@@ -28,7 +28,7 @@ module.exports = {
     }
   },
 
-  async createCategory(req, res) {
+  async store(req, res) {
     try {
       const { name, description } = req.body;
 
@@ -45,7 +45,7 @@ module.exports = {
     }
   },
 
-  async updateCategory(req, res) {
+  async update(req, res) {
     try {
       const { name, description } = req.body;
       const updatedCategory = await categoryService.updateCategory(
@@ -64,7 +64,7 @@ module.exports = {
     }
   },
 
-  async deleteCategory(req, res) {
+  async destroy(req, res) {
     try {
       const result = await categoryService.deleteCategory(req.params.id);
       return res.status(200).json(result);

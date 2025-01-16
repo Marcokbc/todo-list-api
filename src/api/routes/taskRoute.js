@@ -30,7 +30,7 @@ const routes = express.Router();
  *       401:
  *         description: Não autenticado.
  */
-routes.get("/tasks", isAuthenticated, taskController.findAllTasks);
+routes.get("/tasks", isAuthenticated, taskController.index);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ routes.get("/tasks", isAuthenticated, taskController.findAllTasks);
  *       404:
  *         description: Tarefa não encontrada.
  */
-routes.get("/task/findById/:id", isAuthenticated, taskController.findTaskById);
+routes.get("/task/findById/:id", isAuthenticated, taskController.show);
 
 /**
  * @swagger
@@ -195,12 +195,12 @@ routes.get("/tasks/excel", isAuthenticated, taskController.downloadTaskReport);
  *       401:
  *         description: Não autenticado.
  */
-routes.post("/task", isAuthenticated, taskController.postTask);
+routes.post("/task", isAuthenticated, taskController.store);
 
 /**
  * @swagger
  * /task/{id}:
- *   put:
+ *   patch:
  *     summary: Atualiza uma tarefa existente
  *     security:
  *       - bearerAuth: []
@@ -236,7 +236,7 @@ routes.put(
   "/task/:id",
   isAuthenticated,
   validate(taskPutSchema),
-  taskController.putTask
+  taskController.update
 );
 
 /**
@@ -263,6 +263,6 @@ routes.put(
  *       404:
  *         description: Tarefa não encontrada.
  */
-routes.delete("/task/:id", isAuthenticated, taskController.deleteTask);
+routes.delete("/task/:id", isAuthenticated, taskController.destroy);
 
 module.exports = routes;

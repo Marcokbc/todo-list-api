@@ -1,73 +1,68 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
-const swaggerJsDoc = require("swagger-jsdoc");
+const fs = require("fs");
+const path = require("path");
+const swaggerInline = require("swagger-inline");
+const logger = console; // Substitua por um logger real, se necessário
 require("dotenv").config();
+const swaggerFilePath = path.dirname(__dirname) + "/swaggerFile.json";
+const swaggerJsDoc = require("swagger-jsdoc");
 
-const userRoutes = require("./api/routes/userRoute");
-const authRoutes = require("./api/routes/authRoute");
 const taskRoutes = require("./api/routes/taskRoute");
-const uploadRoutes = require("./api/routes/uploadRoute");
 const categoryRoutes = require("./api/routes/categoryRoute");
-const cors = require("cors");
 
 const app = express();
 
-// const allowedOrigins = ["http://example.com", "http://another-example.com"];
-
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Não permitido por CORS"));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-
-// app.use(cors());
-
 app.use(express.json());
 
-var swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "API Documentação",
-    version: "1.0.0",
-    description: "Documentação da API",
-  },
-  servers: [
-    {
-      url: process.env.URL,
-    },
-  ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-      },
-    },
-    schemas: require("../schemas.json"),
-  },
-};
+// Gerar documentação Swagger com `swagger-inline`
+swaggerInline(["./src/**/*.js"], {
+  base: "./swaggerBase.yaml",
+  format: ".json",
+})
+  .then((generatedSwagger) => {
+    logger.info("> Gerando documentação Swagger...");
 
-var options = {
-  swaggerDefinition: swaggerDefinition,
-  apis: [__dirname + "/api/routes/*.js"],
-};
+    // Salvar a documentação no arquivo JSON
+    if (fs.existsSync(path.dirname(__dirname) + "/swaggerFile.json")) {
+      fs.unlink(path.dirname(__dirname) + "/swaggerFile.json", () => {
+        fs.appendFile("./swaggerFile.json", generatedSwagger, function (err2) {
+          if (err2) throw err2;
+          else logger.info("> swagger docs generated!");
+        });
+      });
+    } else {
+      fs.appendFile(
+        path.dirname(__dirname) + "/swaggerFile.json",
+        generatedSwagger,
+        function (err) {
+          if (err) throw err;
+          else logger.info("swagger docs generated!!");
+        }
+      );
+    }
 
-var swaggerSpec = swaggerJsDoc(options);
+    if (fs.existsSync(swaggerFilePath)) {
+      const swaggerDefinition = JSON.parse(generatedSwagger); // Parse no JSON gerado
+      const options = {
+        definition: swaggerDefinition,
+        apis: [path.resolve(__dirname, "api/routes/*.js")], // Caminho das rotas
+      };
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+      const swaggerSpec = swaggerJsDoc(options);
+      app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    } else {
+      logger.warn(
+        "Documentação Swagger não foi gerada. Verifique erros anteriores."
+      );
+    }
+  })
+  .catch((err) => {
+    logger.error("Erro ao gerar documentação Swagger:", err);
+  });
 
-app.use(userRoutes);
-app.use(authRoutes);
+// Rotas
 app.use(taskRoutes);
 app.use(categoryRoutes);
-app.use(uploadRoutes);
 
 module.exports = app;
